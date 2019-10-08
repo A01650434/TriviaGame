@@ -1,52 +1,51 @@
 var triviaQuestions = [{
 	question:  "Which name is not from Cletus and Brandine 44 children?",
-    optionsArr: ["Crystal Meth", "Incest", "Normal-Head", "Kang Kodos"],
+	answerList: ["Crystal Meth", "Incest", "Normal-Head", "Kang Kodos"],
 	answer: 3
 },{
 	question: "What´s  Moe’s Tavern phone number?",
-	optionsArr: ['764-82387', '764-84377', 'SMITHERS', '784-85377'],
+	answerList: ['764-82387', '764-84377', 'SMITHERS', '784-85377'],
     answer: 1, 
     
 },{
 	question: "How old is Ned Flanders?",
-	optionsArr: ["20", "60", "50", "75"],
+	answerList: ["20", "60", "50", "75"],
 	answer: 1
 },{
 	question: "What´s Bart Simpson´s fake drivers license ID?",
-	optionsArr: ["B47U98RE233", "BA7U89RE242", "BA7U89RE2T3", "B47U89RE243"],
+	answerList: ["B47U98RE233", "BA7U89RE242", "BA7U89RE2T3", "B47U89RE243"],
 	answer: 3
 },{
 	question: "Who comopose the show´s theme tune?",
-	optionsArr: ["Danny Elfman","Robert Terwilliger","Randy Newman","Paul McCartney"],
+	answerList: ["Danny Elfman","Robert Terwilliger","Randy Newman","Paul McCartney"],
 	answer: 0
 },{
 	question: 'Who "depply hurt" Marge Simpson in 1990?',
-	optionsArr: ["Josh Weinstein","Hari Kondabolu","Barbara Bush","Hilary Clinton"],
+	answerList: ["Josh Weinstein","Hari Kondabolu","Barbara Bush","Hilary Clinton"],
 	answer: 2
 },{
     question: "Which character was originally supposed to be black?",
-    optionsArr: ["Carl", "Smithers", "Milhouse", "Hank Scorpio"],
+    answerList: ["Carl", "Smithers", "Milhouse", "Hank Scorpio"],
 	answer: 1
 },{
 	question: "What´s Santa´s Little Helper´s racing number?",
-	optionsArr: ["No.8", "No.13", "No.24","No.2"],
+	answerList: ["No.8", "No.13", "No.24","No.2"],
 	answer: 0
 }];
 
- var unanswered;
  var currentQuestion;
- var correctAns; 
- var incorrectAns; 
- var uChoice; 
- var sec; 
+ var correctAnswer; 
+ var incorrectAnswer; 
+ var unanswered; 
+ var seconds; 
  var time; 
  var answered; 
- 
+ var userSelect;
 
-var alerts = {
+var messages = {
 	correct: "Yaaas, that's right!",
 	incorrect: "WRONG",
-	outTime: "Oops, run out of time!",
+	endTime: "Oops, run out of time!",
 	finished: "Your results:"
 }
 
@@ -61,13 +60,13 @@ $('#startOverBtn').on('click', function(){
 });
 
 function newGame(){
-	$('#resultBan').empty();
-	$('#correctAnss').empty();
-	$('#incorrectAnss').empty();
+	$('#finalMessage').empty();
+	$('#correctAnswers').empty();
+	$('#incorrectAnswers').empty();
 	$('#unanswered').empty();
 	currentQuestion = 0;
-	correctAns = 0;
-	incorrectAns = 0;
+	correctAnswer = 0;
+	incorrectAnswer = 0;
 	unanswered = 0;
 	newQuestion();
 }
@@ -75,39 +74,40 @@ function newGame(){
 function newQuestion(){
 	$('#message').empty();
 	$('#correctedAnswer').empty();
+	$('#gif').empty();
 	answered = true;
-    
-    //set  the question
+	
+	//sets up new questions & answerList
 	$('#currentQuestion').html('Question #'+(currentQuestion+1)+'/'+triviaQuestions.length);
 	$('.question').html('<h2>' + triviaQuestions[currentQuestion].question + '</h2>');
 	for(var i = 0; i < 4; i++){
 		var choices = $('<div>');
-		choices.text(triviaQuestions[currentQuestion].optionsArr[i]);
+		choices.text(triviaQuestions[currentQuestion].answerList[i]);
 		choices.attr({'data-index': i });
 		choices.addClass('thisChoice');
-		$('.optionsArr').append(choices);
+		$('.answerList').append(choices);
 	}
 	countdown();
 	//clicking an answer will pause the time and setup answerPage
 	$('.thisChoice').on('click',function(){
-		uChoice = $(this).data('index');
+		userSelect = $(this).data('index');
 		clearInterval(time);
 		answerPage();
 	});
 }
 
 function countdown(){
-	sec = 15;
-	$('#timeLeft').html('<h3>Time Remaining: ' + sec + '</h3>');
+	seconds = 15;
+	$('#timeLeft').html('<h3>Time Remaining: ' + seconds + '</h3>');
 	answered = true;
-	//timer
+	//sets timer to go down
 	time = setInterval(showCountdown, 1000);
 }
 
 function showCountdown(){
-	sec--;
-	$('#timeLeft').html('<h3>Time Remaining: ' + sec + '</h3>');
-	if(sec < 1){
+	seconds--;
+	$('#timeLeft').html('<h3>Time Remaining: ' + seconds + '</h3>');
+	if(seconds < 1){
 		clearInterval(time);
 		answered = false;
 		answerPage();
@@ -116,23 +116,23 @@ function showCountdown(){
 
 function answerPage(){
 	$('#currentQuestion').empty();
-	$('.thisChoice').empty(); 
+	$('.thisChoice').empty(); //Clears question page
 	$('.question').empty();
 
-	var rightAnswerText = triviaQuestions[currentQuestion].optionsArr[triviaQuestions[currentQuestion].answer];
-    var rightAnswerIndex = triviaQuestions[currentQuestion].answer;
-    
-	//check
-	if((uChoice == rightAnswerIndex) && (answered == true)){
-		correctAns++;
-		$('#message').html(alerts.correct);
-	} else if((uChoice != rightAnswerIndex) && (answered == true)){
-		incorrectAns++;
-		$('#message').html(alerts.incorrect);
+	var rightAnswerText = triviaQuestions[currentQuestion].answerList[triviaQuestions[currentQuestion].answer];
+	var rightAnswerIndex = triviaQuestions[currentQuestion].answer;
+	$('#gif').html();
+	//checks to see correct, incorrect, or unanswered
+	if((userSelect == rightAnswerIndex) && (answered == true)){
+		correctAnswer++;
+		$('#message').html(messages.correct);
+	} else if((userSelect != rightAnswerIndex) && (answered == true)){
+		incorrectAnswer++;
+		$('#message').html(messages.incorrect);
 		$('#correctedAnswer').html('The correct answer was: ' + rightAnswerText);
 	} else{
 		unanswered++;
-		$('#message').html(alerts.outTime);
+		$('#message').html(messages.endTime);
 		$('#correctedAnswer').html('The correct answer was: ' + rightAnswerText);
 		answered = true;
 	}
@@ -149,10 +149,11 @@ function scoreboard(){
 	$('#timeLeft').empty();
 	$('#message').empty();
 	$('#correctedAnswer').empty();
+	$('#gif').empty();
 
-	$('#resultBan').html(alerts.finished);
-	$('#correctAnss').html("Correct Answers: " + correctAns);
-	$('#incorrectAnss').html("Incorrect Answers: " + incorrectAns);
+	$('#finalMessage').html(messages.finished);
+	$('#correctAnswers').html("Correct Answers: " + correctAnswer);
+	$('#incorrectAnswers').html("Incorrect Answers: " + incorrectAnswer);
 	$('#unanswered').html("Unanswered: " + unanswered);
 	$('#startOverBtn').addClass('reset');
 	$('#startOverBtn').show();
